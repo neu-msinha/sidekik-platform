@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const UsageRecordSchema = z.object({
   service: z.string().min(1),
-  vendor: z.enum(["elevenlabs", "typesafe", "anthropic", "gemini", "recall"]),
+  vendor: z.enum(["elevenlabs", "typesafe", "anthropic", "recall"]),
   units: z.number().nonnegative(),
   unit: z.enum(["tokens_in", "tokens_out", "minutes", "hours"]),
   cost_usd: z.number().nonnegative(),

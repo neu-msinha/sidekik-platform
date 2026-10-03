@@ -14,14 +14,30 @@ export const DecisionRequestSchema = z.object({
 });
 export type DecisionRequest = z.infer<typeof DecisionRequestSchema>;
 
+/** One question's answer inside a decision (D6, D1, D5 and D7 ask more than one question). */
+export const QuestionAnswerSchema = z.object({
+  /** boolean for noul, option for choice, most likely level (1-based) for score. */
+  answer: z.union([z.string(), z.number(), z.boolean()]),
+  confidence: z.number().min(0).max(1),
+  probabilities: z.record(z.string(), z.number()).optional(),
+  /** Noul only: probability of true. */
+  p_true: z.number().min(0).max(1).optional(),
+  /** Score only: probability-weighted level (1-based), may fall between levels. */
+  score: z.number().optional(),
+});
+export type QuestionAnswer = z.infer<typeof QuestionAnswerSchema>;
+
 export const DecisionResultSchema = z.object({
   id: DecisionIdSchema,
+  /** Answer to the decision's first question (spec order), e.g. D6 → specificity. */
   answer: z.union([z.string(), z.number(), z.boolean()]),
   probabilities: z.record(z.string(), z.number()).optional(),
   confidence: z.number().min(0).max(1),
   provider: DecisionProviderSchema,
   escalated: z.boolean(),
   latency_ms: z.number().nonnegative(),
+  /** Every question's answer, keyed by question name (v0.1.0+: additive). */
+  answers: z.record(z.string(), QuestionAnswerSchema).optional(),
 });
 export type DecisionResult = z.infer<typeof DecisionResultSchema>;
 
