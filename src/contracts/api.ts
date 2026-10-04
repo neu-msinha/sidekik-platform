@@ -41,6 +41,8 @@ export const PresaveResponseSchema = z.object({
   guardrail_key: z.string().optional(),
   quote: z.string().optional(),
   step_id: z.string().optional(),
+  /** `InvoiceState` field the MiniERP highlights for the blocking guardrail (same as the `intervene` command's `field`). */
+  field: z.string().optional(),
   /** Every guardrail that fired, blocking first, so non-blocking ones (G3: ask the controller) reach the page too. */
   violations: z.array(PresaveViolationSchema).optional(),
 });

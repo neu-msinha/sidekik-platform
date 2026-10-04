@@ -23,6 +23,7 @@ const samples: [string, { parse: (v: unknown) => unknown }, unknown][] = [
       guardrail_key: "G1",
       quote: "Alles über fünftausend…",
       step_id: "s4",
+      field: "cost_center",
       violations: [
         { guardrail_id: "g1", key: "G1", description: "Equipment over €5,000 is capex", blocking: true, step_id: "s4" },
         { guardrail_id: "g3", key: "G3", description: "Unknown supplier: ask the controller", blocking: false },
