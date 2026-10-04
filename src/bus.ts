@@ -47,12 +47,17 @@ export type CreateBusOptions = {
   logger?: Logger;
   /** Consumer name inside the group. Stable by default so a restart drains its own pending entries. */
   consumerName?: string;
+  /**
+   * Reconnect attempts a publish waits for before it fails (default 3). Without a limit a publish
+   * waits forever while Redis is down, which blows every caller's latency budget.
+   */
+  publishRetries?: number;
 };
 
 export function createBus(redisUrl: string, service: ServiceName, options: CreateBusOptions = {}): Bus {
   const log = options.logger;
   const consumerName = options.consumerName ?? service;
-  const pub = new Redis(redisUrl, { maxRetriesPerRequest: null });
+  const pub = new Redis(redisUrl, { maxRetriesPerRequest: options.publishRetries ?? 3 });
   const consumers = new Set<{ stop: () => void; done: Promise<void> }>();
   let closed = false;
 
@@ -153,7 +158,20 @@ export function createBus(redisUrl: string, service: ServiceName, options: Creat
           )) as [string, [string, string[] | null][]][] | null;
         } catch (err) {
           if (!running) return;
-          log?.error({ stream, group, err }, "bus: XREADGROUP failed, retrying");
+          if (errorMessage(err).includes("NOGROUP")) {
+            // The stream or group is gone (Redis flushed or restarted without persistence): recreate
+            // the group from the start of the new stream, so nothing published since is skipped.
+            log?.warn({ stream, group }, "bus: consumer group missing, recreating it");
+            try {
+              await ensureGroup(conn, stream, group, "0");
+              cursor = "0";
+              continue;
+            } catch (groupErr) {
+              log?.error({ stream, group, err: groupErr }, "bus: recreating the consumer group failed");
+            }
+          } else {
+            log?.error({ stream, group, err }, "bus: XREADGROUP failed, retrying");
+          }
           await sleep(500);
           continue;
         }
@@ -208,9 +226,9 @@ export function createBus(redisUrl: string, service: ServiceName, options: Creat
   return { publish, consume, close };
 }
 
-async function ensureGroup(conn: Redis, stream: string, group: string): Promise<void> {
+async function ensureGroup(conn: Redis, stream: string, group: string, from: "$" | "0" = "$"): Promise<void> {
   try {
-    await conn.xgroup("CREATE", stream, group, "$", "MKSTREAM");
+    await conn.xgroup("CREATE", stream, group, from, "MKSTREAM");
   } catch (err) {
     if (!errorMessage(err).includes("BUSYGROUP")) throw err;
   }

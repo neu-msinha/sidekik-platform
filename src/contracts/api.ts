@@ -23,12 +23,26 @@ export const ElSessionSchema = z.object({
 });
 export type ElSession = z.infer<typeof ElSessionSchema>;
 
+/** One guardrail that fired on the submitted record. */
+export const PresaveViolationSchema = z.object({
+  guardrail_id: z.string(),
+  key: z.string(),
+  description: z.string(),
+  /** Blocking guardrails (a `require` or `block` consequence) set `allow: false`. */
+  blocking: z.boolean(),
+  step_id: z.string().optional(),
+});
+export type PresaveViolation = z.infer<typeof PresaveViolationSchema>;
+
 /** Pre-save check result (tutor computes it; gateway relays it to the page). */
 export const PresaveResponseSchema = z.object({
   allow: z.boolean(),
   guardrail_id: z.string().optional(),
+  guardrail_key: z.string().optional(),
   quote: z.string().optional(),
   step_id: z.string().optional(),
+  /** Every guardrail that fired, blocking first, so non-blocking ones (G3: ask the controller) reach the page too. */
+  violations: z.array(PresaveViolationSchema).optional(),
 });
 export type PresaveResponse = z.infer<typeof PresaveResponseSchema>;
 
@@ -197,5 +211,6 @@ export const GetExpertMomentResponseSchema = z.object({
   quote: z.string(),
   quote_en: z.string().optional(),
   label: z.string(),
-  clip_url: z.url(),
+  /** Absent until perception has cut the clip (clips are an async job and on the cut list). */
+  clip_url: z.url().optional(),
 });

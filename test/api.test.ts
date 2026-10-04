@@ -14,6 +14,21 @@ const samples: [string, { parse: (v: unknown) => unknown }, unknown][] = [
   ["POST /v1/sessions/:id/meeting-bot", C.MeetingBotRequestSchema, { meeting_url: "https://meet.google.com/abc-defg-hij" }],
   ["POST /v1/sessions/:id/presave req", C.PresaveRequestSchema, { state: INVOICES["4510"] }],
   ["presave res", C.PresaveResponseSchema, { allow: false, guardrail_id: "g1", quote: "Alles über fünftausend…", step_id: "s4" }],
+  [
+    "presave res with every violation",
+    C.PresaveResponseSchema,
+    {
+      allow: false,
+      guardrail_id: "g1",
+      guardrail_key: "G1",
+      quote: "Alles über fünftausend…",
+      step_id: "s4",
+      violations: [
+        { guardrail_id: "g1", key: "G1", description: "Equipment over €5,000 is capex", blocking: true, step_id: "s4" },
+        { guardrail_id: "g3", key: "G3", description: "Unknown supplier: ask the controller", blocking: false },
+      ],
+    },
+  ],
   ["POST /v1/workmaps/:id/publish", C.PublishWorkmapResponseSchema, { job_id: "j1" }],
   ["GET /v1/workmaps/:id/steps/:step/clip", C.ClipUrlResponseSchema, { url: "https://x.supabase.co/storage/v1/object/sign/captures/c.mp4?token=t" }],
   ["POST /v1/agent-host/claim req", C.AgentHostClaimRequestSchema, { t: "one-time" }],
@@ -35,6 +50,7 @@ const samples: [string, { parse: (v: unknown) => unknown }, unknown][] = [
   ["POST /internal/tools/recall_context res", C.RecallContextResponseSchema, { snippets: [{ text: "G1 …", t_ms: 192000, source: "guardrail" }] }],
   ["POST /internal/presave req", C.InternalPresaveRequestSchema, { session_id: "s", state: INVOICES["4510"] }],
   ["POST /internal/tools/get_expert_moment res", C.GetExpertMomentResponseSchema, { quote: "…", label: "03:12", clip_url: "https://x/c.mp4" }],
+  ["POST /internal/tools/get_expert_moment res, clip not cut yet", C.GetExpertMomentResponseSchema, { quote: "…", label: "03:12" }],
 ];
 
 describe("api schemas", () => {
