@@ -173,4 +173,22 @@ describe("bus", () => {
     expect(calls).toBe(0);
     expect(() => local.consume(stream, async () => {})).toThrow(/closed/);
   });
+
+  it("recreates its consumer group after Redis loses it (flush) and keeps delivering", async () => {
+    const got: number[] = [];
+    bus.consume(stream, async (ev) => void got.push(ev.t_ms), { blockMs: 100 });
+    await waitFor(async () => (await admin.exists(stream)) === 1);
+    await admin.flushdb(); // stream and group gone; XREADGROUP now fails with NOGROUP
+    await bus.publish(stream, speechEvent(7));
+    await waitFor(() => got.length === 1, 5_000);
+    expect(got).toEqual([7]);
+  });
+
+  it("fails a publish instead of waiting forever while Redis is unreachable", async () => {
+    const down = createBus("redis://127.0.0.1:1/15", "brain", { publishRetries: 1 });
+    const started = Date.now();
+    await expect(down.publish(stream, speechEvent(1))).rejects.toThrow();
+    expect(Date.now() - started).toBeLessThan(5_000);
+    await down.close();
+  });
 });
