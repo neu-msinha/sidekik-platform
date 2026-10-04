@@ -1,0 +1,6 @@
+# Analyzer engine config (ANALYZER_CONF_FILE). Languages Sidekik sessions run in.
+supported_languages:
+  - en
+  - de
+# Drop weak matches; callers can still pass score_threshold per request.
+default_score_threshold: 0.4

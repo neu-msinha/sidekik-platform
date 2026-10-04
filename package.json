@@ -27,7 +27,8 @@
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
     "replay": "tsx dev/replay.ts",
-    "fixtures:gen": "tsx scripts/gen-fixtures.ts"
+    "fixtures:gen": "tsx scripts/gen-fixtures.ts",
+    "test:presidio": "PRESIDIO_ANALYZER_URL=${PRESIDIO_ANALYZER_URL:-http://localhost:5002} PRESIDIO_ANONYMIZER_URL=${PRESIDIO_ANONYMIZER_URL:-http://localhost:5001} vitest run test/presidio.test.ts"
   },
   "dependencies": {
     "ioredis": "^6.0.0",

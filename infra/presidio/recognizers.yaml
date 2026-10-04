@@ -1,0 +1,80 @@
+# Recognizer registry (RECOGNIZER_REGISTRY_CONF_FILE) for Sidekik: accounts-payable transcripts and
+# screen text in German and English. Only recognizers listed here load (plus the spaCy PERSON NER).
+# Invoice numbers, cost centers, company codes and asset numbers are business data: callers pass the
+# allow-list from @sidekik/contracts (PRESIDIO_ALLOW_LIST) so they are never redacted.
+supported_languages:
+  - en
+  - de
+global_regex_flags: 26
+
+recognizers:
+  - name: IbanRecognizer
+    type: predefined
+    supported_languages:
+      - language: en
+        context: [iban, bank, account, transfer]
+      - language: de
+        context: [iban, konto, bankverbindung, überweisung, bank]
+
+  - name: EmailRecognizer
+    type: predefined
+    supported_languages: [en, de]
+
+  - name: PhoneRecognizer
+    type: predefined
+    supported_languages:
+      - language: en
+        context: [phone, number, telephone, cell, mobile, call]
+      - language: de
+        context: [telefon, telefonnummer, handy, mobil, nummer, anrufen, tel]
+
+  - name: CreditCardRecognizer
+    type: predefined
+    supported_languages:
+      - language: en
+        context: [credit, card, visa, mastercard, amex]
+      - language: de
+        context: [kreditkarte, karte, visa, mastercard, amex]
+
+  - name: IpRecognizer
+    type: predefined
+    supported_languages: [en, de]
+
+  # VAT IDs (USt-IdNr. / DIČ) of suppliers and subsidiaries.
+  - name: DeVatRecognizer
+    type: custom
+    supported_language: de
+    supported_entity: DE_VAT_ID
+    patterns:
+      - name: de vat (DE + 9 digits)
+        regex: "\\bDE ?\\d{9}\\b"
+        score: 0.85
+    context: [ust, ust-idnr, umsatzsteuer, steuernummer, vat]
+  - name: DeVatRecognizerEn
+    type: custom
+    supported_language: en
+    supported_entity: DE_VAT_ID
+    patterns:
+      - name: de vat (DE + 9 digits)
+        regex: "\\bDE ?\\d{9}\\b"
+        score: 0.85
+    context: [vat, tax]
+
+  - name: CzVatRecognizer
+    type: custom
+    supported_language: de
+    supported_entity: CZ_VAT_ID
+    patterns:
+      - name: cz vat (CZ + 8-10 digits)
+        regex: "\\bCZ ?\\d{8,10}\\b"
+        score: 0.85
+    context: [dič, dic, ust, ust-idnr, umsatzsteuer, vat]
+  - name: CzVatRecognizerEn
+    type: custom
+    supported_language: en
+    supported_entity: CZ_VAT_ID
+    patterns:
+      - name: cz vat (CZ + 8-10 digits)
+        regex: "\\bCZ ?\\d{8,10}\\b"
+        score: 0.85
+    context: [vat, dic, tax]

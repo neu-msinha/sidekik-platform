@@ -12,8 +12,10 @@ services:
       timeout: 2s
       retries: 15
 
+  # Sidekik build: English + German models and the AP recognizers (infra/presidio).
   presidio-analyzer:
-    image: mcr.microsoft.com/presidio-analyzer:latest
+    build: ../infra/presidio
+    image: sidekik-presidio-analyzer
     ports: ["5002:3000"]
 
   presidio-anonymizer:

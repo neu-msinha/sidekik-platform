@@ -1,0 +1,38 @@
+# NLP engine config (NLP_CONF_FILE): spaCy, English + German.
+nlp_engine_name: spacy
+models:
+  - lang_code: en
+    model_name: en_core_web_lg
+  - lang_code: de
+    model_name: de_core_news_md
+
+ner_model_configuration:
+  # PERSON only. Organizations, locations and dates are business data in an AP workflow:
+  # redacting "Kranbau GmbH", "Präzisionswerk Ulm" or "im Dezember" would erase the very
+  # facts the guardrails (G3, G4) are about.
+  model_to_presidio_entity_mapping:
+    PER: PERSON
+    PERSON: PERSON
+  labels_to_ignore:
+    - ORG
+    - ORGANIZATION
+    - LOC
+    - LOCATION
+    - GPE
+    - FAC
+    - NORP
+    - DATE
+    - TIME
+    - MISC
+    - CARDINAL
+    - MONEY
+    - PERCENT
+    - QUANTITY
+    - ORDINAL
+    - PRODUCT
+    - EVENT
+    - WORK_OF_ART
+    - LAW
+    - LANGUAGE
+  low_confidence_score_multiplier: 0.4
+  low_score_entity_names: []

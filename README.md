@@ -65,6 +65,28 @@ pnpm replay fixtures/tutor_lena.jsonl --session <uuid> # reuse a session that ex
 - **What's in them:** only what the gateway and perception publish (lifecycle, turns, speech, DOM and screen events), never agent commands. Any service can replay them as input.
 - **Ids:** each run gets a fresh UUID session id and fresh event ids.
 - **Generated:** edit `dev/fixtures/build.ts`, then run `pnpm fixtures:gen`. `test/fixtures.test.ts` validates every event against its contract and checks the demo story. Replace them with real recordings after H14.
+## PII redaction (Presidio)
+
+```sh
+docker compose -f dev/docker-compose.yml up -d --build presidio-analyzer presidio-anonymizer   # analyzer :5002, anonymizer :5001
+pnpm test:presidio      # 10 German/English AP sentences against the live containers
+```
+
+```ts
+import { redact } from "@sidekik/contracts";
+const { text } = await redact(turn.text, session.language, {
+  analyzerUrl: env.PRESIDIO_ANALYZER_URL,
+  anonymizerUrl: env.PRESIDIO_ANONYMIZER_URL,
+  keep: [record.supplier],   // the supplier on screen: spaCy tags unknown companies as PERSON
+});
+```
+
+- **`infra/presidio/`:** the analyzer image (pinned base plus the `de_core_news_md` model) and its config.
+  - NER maps **PERSON only**, so organizations, places and dates ("Kranbau GmbH", "Ulm", "im Dezember") stay. They're the facts the guardrails use.
+  - Recognizers: IBAN, email, phone, credit card, IP, `DE_VAT_ID` and `CZ_VAT_ID`, in English and German.
+- **`PRESIDIO_ALLOW_LIST`** (regex, every pattern anchored) keeps invoice, cost-center and supplier numbers, company codes (DE01/CZ01), asset and document numbers, and German imperatives the model mistakes for names ("Frag den …").
+- **`redact()` fails closed.** On any Presidio error it throws; it never returns unredacted text.
+- The image redactor still uses the stock image (perception).
 
 ## What's in it
 
