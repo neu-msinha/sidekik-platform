@@ -22,7 +22,10 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "release": "bash scripts/release.sh"
+    "release": "bash scripts/release.sh",
+    "seed:gen": "tsx scripts/gen-seed.ts",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db"
   },
   "dependencies": {
     "ioredis": "^6.0.0",
@@ -31,7 +34,10 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@types/json-logic-js": "^2.0.8",
     "@types/node": "^20.19.0",
+    "json-logic-js": "^2.0.5",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vitest": "^4.1.11"
   }

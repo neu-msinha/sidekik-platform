@@ -34,6 +34,25 @@ pnpm test        # bus tests use Redis DB 15 (override with TEST_REDIS_URL)
 pnpm build
 ```
 
+## Database (Supabase)
+
+```sh
+supabase start -x studio,imgproxy,edge-runtime,logflare,vector,mailpit,realtime,postgres-meta,supavisor   # local stack, minimal
+pnpm db:reset      # apply supabase/migrations 0000–0008 + supabase/seed.sql
+pnpm db:test       # pgTAP: schema, RLS (anon / outsider / admin / learner), search_kb, buckets
+```
+
+- `supabase/migrations/` implements `docs/SCHEMA.md`. Each owner reviews their own file: 0001 and 0005–0006 Mayukh, 0002–0003 Aadil, 0004 and 0007–0008 Sahil.
+- RLS: the browser only reads. There are select policies only, and services write with the service role.
+  - Learners see only their own `learner_attempts` and `mastery`.
+  - `agent_host_tokens` are never readable from the browser.
+- `supabase/seed.sql` is **generated**: edit `dev/seed/demo.ts`, then run `pnpm seed:gen`. `test/seed.test.ts` checks:
+  - the demo Work Map (S1–S7, G1–G5) validates against `WorkMapSchema`;
+  - every guardrail trips on the right demo invoice (e.g. #4510, the €7,200 catch, trips G1 and G3);
+  - `seed.sql` is up to date.
+- Demo ids are fixed: org `…0001`, expert Sabine `…0011`, learner Lena `…0021`, workflow `…0031`, Work Map `…0041`.
+- Admins: sign in by magic link, then run `select public.grant_demo_role('you@example.com');` in the SQL editor.
+
 ## What's in it
 
 | Module | Contents |

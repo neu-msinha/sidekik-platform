@@ -22,7 +22,7 @@ This repo holds the shared code that every service uses:
 
 ```
 sidekik-platform/
-  package.json            # name "@sidekik/contracts", main dist/index.js, files ["dist"], prepare: "tsc"
+  package.json            # name "@sidekik/contracts", main dist/index.js, files ["dist"]; no prepare (tags carry dist/)
   src/
     index.ts              # re-exports everything
     contracts/
@@ -107,7 +107,7 @@ Brain uses it to call Jev. Mapper and tutor use it to know what answers can come
   - Adds an `org_read` select policy on every table.
   - `learner_attempts` and `mastery` get an extra policy: rows are visible only to the learner themself or to admin/manager roles.
 - Writes come only from services, which use the service role. The browser only reads, except `consent_records` inserts, which go through the gateway.
-- Index `(session_id, t_ms)` on `screen_events`, `transcript_turns` and `decisions_log`. Add an HNSW index on `kb_chunks.embedding vector(768)` with cosine distance.
+- Index `(session_id, t_ms)` on `screen_events`, `transcript_turns` and `decisions_log`. Add the GIN indexes on `kb_chunks.tsv` and `kb_chunks.content` (trigram), plus the `search_kb()` function, exactly as in `docs/SCHEMA.md`.
 - **Columns, constraints and indexes are fully specified in `docs/SCHEMA.md`.** Implement them as written. Each owner reviews their own migration file (CODEOWNERS).
 
 ## 7. Versioning
@@ -128,7 +128,7 @@ Brain uses it to call Jev. Mapper and tutor use it to know what answers can come
 7. `infra/presidio/recognizers.yaml`, tested on 10 sample German/English AP sentences.
 8. `dev/replay.ts` plus the two fixture files (hand-write them now; replace them with real recordings after H14).
 9. `smoke.sh`.
-10. Tag `v0.1.0`.
+10. Tag `v0.1.0` with `pnpm release 0.1.0`. It builds `dist/` onto a detached commit and tags that commit; `main` never holds `dist/`.
 
 ## 9. Definition of done
 
