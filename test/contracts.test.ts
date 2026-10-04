@@ -44,6 +44,7 @@ const guardrail = {
 
 const samples: [string, { parse: (v: unknown) => unknown }, unknown][] = [
   ["SessionLifecycle", SessionLifecycleSchema, { event: "started", kind: "capture", phase: "capture", workflow_id: "wf1", mode: "browser", language: "de" }],
+  ["SessionLifecycle bot_error", SessionLifecycleSchema, { event: "bot_error", kind: "capture", phase: "capture", workflow_id: "wf1", mode: "meeting", language: "de", reason: "bot_kicked_from_waiting_room" }],
   ["TranscriptTurn", TranscriptTurnSchema, { turn_id: "t1", role: "user", text: "…und dann geht die auf 0400.", lang: "de", source: "live", redacted: true }],
   ["SpeechSignal", SpeechSignalSchema, { kind: "user_speech_end", source: "sdk" }],
   ["DomEvent", DomEventSchema, { kind: "field_change", record: { kind: "invoice", id: "4471" }, field: "cost_center", before: "4711", after: "0400", state: { net_amount: 6350, cost_center: "0400" } }],
