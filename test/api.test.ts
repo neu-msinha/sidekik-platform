@@ -82,6 +82,7 @@ describe("PRICE_TABLE", () => {
 
   it("prices Recall per bot hour", () => {
     expect(C.priceUsd("recall", "bot", "hours", 1.5)).toBeCloseTo(0.75, 10);
+    expect(C.priceUsd("recall", "bot_web_4_core", "hours", 0.5)).toBeCloseTo(0.3, 10);
   });
 
   it("returns undefined for prices not in the table", () => {
