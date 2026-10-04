@@ -53,6 +53,19 @@ pnpm db:test       # pgTAP: schema, RLS (anon / outsider / admin / learner), sea
 - Demo ids are fixed: org `…0001`, expert Sabine `…0011`, learner Lena `…0021`, workflow `…0031`, Work Map `…0041`.
 - Admins: sign in by magic link, then run `select public.grant_demo_role('you@example.com');` in the SQL editor.
 
+## Bus fixtures and replay
+
+```sh
+pnpm replay fixtures/capture_sabine.jsonl              # real time; --speed 10 or --speed max
+pnpm replay fixtures/tutor_lena.jsonl --session <uuid> # reuse a session that exists in Supabase
+```
+
+- **`capture_sabine.jsonl`** (121 events): Sabine codes #4471, #4480, #4492 and #4501, explaining in German. She answers 3 questions, then the session goes task done → debrief (3 follow-ups + teach-back) → confirmed.
+- **`tutor_lena.jsonl`** (46 events): Lena on the published Work Map. #4510 on 4711 trips G1 + G3 at save; recoded to 0400 without an asset number, it trips G2 + G3. #4511 (Kranbau in December) trips G4.
+- **What's in them:** only what the gateway and perception publish (lifecycle, turns, speech, DOM and screen events), never agent commands. Any service can replay them as input.
+- **Ids:** each run gets a fresh UUID session id and fresh event ids.
+- **Generated:** edit `dev/fixtures/build.ts`, then run `pnpm fixtures:gen`. `test/fixtures.test.ts` validates every event against its contract and checks the demo story. Replace them with real recordings after H14.
+
 ## What's in it
 
 | Module | Contents |

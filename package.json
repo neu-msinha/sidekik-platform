@@ -25,7 +25,9 @@
     "release": "bash scripts/release.sh",
     "seed:gen": "tsx scripts/gen-seed.ts",
     "db:reset": "supabase db reset",
-    "db:test": "supabase test db"
+    "db:test": "supabase test db",
+    "replay": "tsx dev/replay.ts",
+    "fixtures:gen": "tsx scripts/gen-fixtures.ts"
   },
   "dependencies": {
     "ioredis": "^6.0.0",
