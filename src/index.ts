@@ -8,3 +8,7 @@ export * from "./contracts/workmap.js";
 export * from "./contracts/usage.js";
 export * from "./streams.js";
 export * from "./ids.js";
+export * from "./bus.js";
+export * from "./auth.js";
+export * from "./logger.js";
+export * from "./env.js";
