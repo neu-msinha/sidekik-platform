@@ -80,6 +80,10 @@ describe("PRICE_TABLE", () => {
     expect(C.priceUsd("anthropic", "claude-sonnet-5-5", "tokens_in", 1000)).toBeCloseTo(0.002, 10);
   });
 
+  it("prices Recall per bot hour", () => {
+    expect(C.priceUsd("recall", "bot", "hours", 1.5)).toBeCloseTo(0.75, 10);
+  });
+
   it("returns undefined for prices not in the table", () => {
     expect(C.priceUsd("elevenlabs", "any", "minutes", 10)).toBeUndefined();
     expect(C.priceUsd("anthropic", "claude-unknown", "tokens_in", 10)).toBeUndefined();

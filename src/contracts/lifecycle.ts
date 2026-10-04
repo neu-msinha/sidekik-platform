@@ -27,5 +27,7 @@ export const SessionLifecycleSchema = z.object({
   workmap_id: z.string().min(1).optional(),
   mode: SessionModeSchema,
   language: z.string().min(1),
+  /** Why the bot failed or left (`bot_error`, `bot_left`), e.g. Recall's status sub code. */
+  reason: z.string().min(1).optional(),
 });
 export type SessionLifecycle = z.infer<typeof SessionLifecycleSchema>;
