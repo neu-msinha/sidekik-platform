@@ -65,6 +65,20 @@ pnpm replay fixtures/tutor_lena.jsonl --session <uuid> # reuse a session that ex
 - **What's in them:** only what the gateway and perception publish (lifecycle, turns, speech, DOM and screen events), never agent commands. Any service can replay them as input.
 - **Ids:** each run gets a fresh UUID session id and fresh event ids.
 - **Generated:** edit `dev/fixtures/build.ts`, then run `pnpm fixtures:gen`. `test/fixtures.test.ts` validates every event against its contract and checks the demo story. Replace them with real recordings after H14.
+## Integration smoke test (H6 / H14 / H18)
+
+```sh
+dev/smoke.sh            # /healthz of every service (gateway :8080 … meetbot :8086)
+dev/smoke.sh h6         # Checkpoint 1: ≥ 3 asks from brain at pauses, ≥ 1 limit/stop_and_ask
+dev/smoke.sh h14        # Checkpoint 2: + ≥ 3 debrief follow-ups, a teach-back, Work Map published
+dev/smoke.sh h18        # Checkpoint 3: presave catches #4510 (G1, quote, < 300 ms), intervene at S4, replay, summary
+```
+
+It replays the checkpoint's fixture as a fresh session, waits, and then checks what services published for that session on `sk:agent.commands` and `sk:workmap.published`.
+- **Options:** `--speed 10`, `--wait 15`, `--services brain,mapper` (override the required set), `--min-asks 3`.
+- **Env:** `REDIS_URL`, `<SERVICE>_URL` (e.g. `BRAIN_URL=https://…`) and `SK_INTERNAL_TOKEN` for the H18 presave call.
+- **Exit code:** non-zero on any failure.
+
 ## PII redaction (Presidio)
 
 ```sh
