@@ -53,6 +53,7 @@ const samples: [string, { parse: (v: unknown) => unknown }, unknown][] = [
   ["AgentCommand summary", AgentCommandSchema, { type: "summary", mastery }],
   ["DecisionRequest", DecisionRequestSchema, { session_id: "s1", decisions: [{ id: "D8", state: { reply: "Ja, genau." } }] }],
   ["DecisionResult", DecisionResultSchema, { id: "D8", answer: "confirmed", probabilities: { confirmed: 0.91 }, confidence: 0.91, provider: "jev", escalated: false, latency_ms: 212 }],
+  ["DecisionResult with answers", DecisionResultSchema, { id: "D6", answer: 1, confidence: 0.82, provider: "jev", escalated: false, latency_ms: 240, answers: { specificity: { answer: 1, score: 1.3, confidence: 0.82 }, refers_to_unknown_entity: { answer: true, p_true: 0.9, confidence: 0.9 } } }],
   ["Guardrail", GuardrailSchema, guardrail],
   ["WorkMap", WorkMapSchema, { id: uuid(1), workflow_id: "wf1", expert_id: "e1", version: 1, status: "published", title: "Supplier invoice coding", language: "de", steps: [{ id: uuid(2), key: "S4", ordinal: 4, title: "Code the invoice to a cost center", screen_moment: { t_ms: 192_000, label: "03:12", event_ids: ["01J0"], field: "cost_center" }, decision: "Re-coded opex (4711) to capex (0400)", reason: { quote: "Alles über fünftausend…", turn_id: "t7", source_label: "Sabine, 03:12" }, guardrail_ids: [uuid(3)], is_judgment_call: true, screen_signature: { app: "MiniERP", record_kind: "invoice", field: "cost_center" } }], guardrails: [guardrail], open_items: [{ id: "o1", text: "Which list marks known suppliers?", origin: "live", status: "open" }] }],
   ["WorkMapPublished", WorkMapPublishedSchema, { workmap_id: uuid(1), workflow_id: "wf1", version: 1 }],
@@ -94,5 +95,11 @@ describe("envelope", () => {
   it("rejects a payload that belongs to another stream", () => {
     const ev = makeEvent({ type: "speech.signal", org_id: "o1", session_id: "s1", t_ms: 0, producer: "gateway", data: { kind: "nope" } });
     expect(() => streamEnvelopeSchema(STREAMS.speech).parse(ev)).toThrow();
+  });
+});
+
+describe("UsageRecord vendor (docs v0.2)", () => {
+  it("no longer accepts gemini", () => {
+    expect(() => UsageRecordSchema.parse({ service: "perception", vendor: "gemini", units: 1, unit: "tokens_in", cost_usd: 0 })).toThrow();
   });
 });
