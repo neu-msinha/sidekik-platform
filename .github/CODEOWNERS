@@ -1,0 +1,10 @@
+# Sahil owns this repo; Mayukh reviews (ARCHITECTURE §3: reviews rotate).
+*                                       @neu-msinha
+
+# Each migration goes to the owner of its tables (docs/SCHEMA.md, CONTRIBUTING).
+/supabase/migrations/0001_core.sql      @neu-msinha
+/supabase/migrations/0002_voice.sql     @aadilxx1
+/supabase/migrations/0003_meetbot.sql   @aadilxx1
+/supabase/migrations/0005_mapping.sql   @neu-msinha
+/supabase/migrations/0006_teaching.sql  @neu-msinha
+# 0004 (capture + brain), 0007 (RLS) and 0008 (storage) are Sahil's: Mayukh reviews them via the default above.
