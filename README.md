@@ -110,10 +110,12 @@ const { text } = await redact(turn.text, session.language, {
 | `contracts/lifecycle.ts` | `SessionLifecycle`, `Phase`, `SessionKind`, `SessionMode` |
 | `contracts/transcript.ts` | `TranscriptTurn`, `SpeechSignal` |
 | `contracts/screen.ts` | `ScreenEvent`, `ScreenState`, `InvoiceState`, `DomEvent` |
-| `contracts/commands.ts` | `AgentCommand` union, `QType` |
+| `contracts/commands.ts` | `AgentCommand` union, `QType`, `toPageMessage()`, `pageAction()` |
 | `contracts/decisions.ts` | `DecisionRequest`/`Result`/`Response`, `DECISION_SPECS` (D1–D12), `expandQuestions()` |
 | `contracts/workmap.ts` | `WorkMap`, `Step`, `Guardrail`, `Evidence`, `OpenItem`, `MasterySummary`, `WorkMapPublished` |
-| `contracts/usage.ts` | `UsageRecord` |
+| `contracts/usage.ts` | `UsageRecord`, `PRICE_TABLE` (dated), `priceUsd()` |
+| `contracts/api.ts` | Request/response schemas for every HTTP endpoint between services and the page: gateway `/v1` + `/internal`, `/ws/client` messages, frame headers, voice token, meetbot bots, perception clips, mapper `recall_context`, tutor presave + tools |
+| `presidio.ts` | `redact()`, `PRESIDIO_ALLOW_LIST`, `keepPatterns()` |
 | `streams.ts` | `STREAMS`, `STREAM_SCHEMAS`, `EVENT_TYPES`, `streamEnvelopeSchema()`, `DLQ_STREAM` |
 | `bus.ts` | `createBus(redisUrl, service)` → `publish` / `consume` / `close` over Redis Streams |
 | `auth.ts` | `signSessionToken`, `verifySessionToken`, `internalAuth` (Fastify preHandler), `verifyHmac` |

@@ -13,3 +13,4 @@ export * from "./auth.js";
 export * from "./logger.js";
 export * from "./env.js";
 export * from "./presidio.js";
+export * from "./contracts/api.js";
