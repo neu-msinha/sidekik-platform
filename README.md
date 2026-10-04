@@ -13,7 +13,16 @@
 import { STREAMS, ScreenEventSchema, DECISION_SPECS, makeEvent, type ScreenEvent } from "@sidekik/contracts";
 ```
 
-The package builds on install (`prepare`), so consumers get `dist/` without a publish step.
+Release tags carry a prebuilt `dist/`, so installing runs no build step. pnpm 10 blocks build scripts in git dependencies, which is why the build is prebuilt. Always pin a tag, never a branch: branches don't contain `dist/`.
+
+## Release
+
+```sh
+pnpm release 0.1.1                  # typecheck + test + build, then tag v0.1.1 on a detached commit with dist/
+git push upstream v0.1.1            # publish the tag to sidekik-live
+```
+
+`main` never contains `dist/`. Bump the minor for additive changes and the major for breaking ones (docs/DESIGN.md §7), then post the tag in the team chat.
 
 ## Develop
 
