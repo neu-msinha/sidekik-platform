@@ -16,7 +16,8 @@ export type UsageUnit = UsageRecord["unit"];
  * USD per unit, by vendor and model. Dated: update `as_of` with any change.
  * - TypeSafe Jev: docs.typesafe.ai/models ($0.042 per Mtok input, output free).
  * - Anthropic: Claude Haiku 4.5 $1 / $5, Claude Sonnet 5.5 $2 / $10 per Mtok (in / out).
- * - Recall: $0.50 per bot hour (sidekik-meetbot DESIGN §2), under the model name "bot".
+ * - Recall: $0.50 per bot hour ("bot"); the web_4_core variant, which per-participant video needs,
+ *   adds $0.10 ("bot_web_4_core", docs.recall.ai: stream media).
  * ElevenLabs (minutes) depends on the team's plan: add it from the invoice; until then priceUsd()
  * returns undefined for it and cost_usd should be 0 with a log line.
  */
@@ -33,6 +34,7 @@ export const PRICE_TABLE = {
   elevenlabs: {},
   recall: {
     bot: { hours: 0.5 },
+    bot_web_4_core: { hours: 0.6 },
   },
 } as const satisfies { as_of: string } & Record<UsageVendor, Record<string, Partial<Record<UsageUnit, number>>>>;
 
